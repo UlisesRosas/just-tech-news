@@ -66,6 +66,8 @@ router.put('/:id', (req, res) => {
 // is the same as UPDATE usersSET username = "Lernantino", email = "lernantino@gmail.com", password = "newPassword1234"
 // WHERE id = 1; in MySQL
   User.update(req.body, {
+    // this enables the hooks option for the obeject
+    individualHooks: true,
     where: {
       id: req.params.id
     }

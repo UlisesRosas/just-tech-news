@@ -1,3 +1,5 @@
+// useed to hash the sensitive user information
+const bcrypt = require('bcrypt');
 // required for sequelize library
 const { Model, DataTypes } = require('sequelize');
 // this filw has connections to the server
@@ -50,6 +52,22 @@ User.init(
       }
     },
     {
+      hooks:{
+// this is to pass in hooks objects that we will use for bcrypt to hash data
+  // set up beforeCreate lifecycle "hook" functionality
+  // it fires before a new instance of user us created
+   async beforeCreate(newUserData) {
+    // pass ijn salt value of 10 (salt has to do with incription)
+    newUserData.password =  await bcrypt.hash(newUserData.password, 10);
+      return newUserData;
+  },
+  // set up beforeUpdate lifecycle "hook" functionality
+  // this is to hash the password when the user updates their password
+  async beforeUpdate(updatedUserData) {
+    updatedUserData.password = await bcrypt.hash(updatedUserData.password, 10);
+    return updatedUserData;
+  }
+      },
       sequelize,
       timestamps: false,
       freezeTableName: true,
