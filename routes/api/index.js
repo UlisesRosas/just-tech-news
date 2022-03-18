@@ -3,7 +3,9 @@
 const router = require('express').Router();
 // inports the routes we made in the user-routes.js file
 const userRoutes = require('./user-routes.js');
+const postRoutes = require('./post-routes.js');
 // prefixing the routes we just collected to thid end point
 router.use('/users', userRoutes);
+router.use('/posts', postRoutes)
 
 module.exports = router;
