@@ -16,6 +16,7 @@ app.use(routes);
 
 // turn on connection to db and server
 // sequalize.sync will connect the models to the data base. if it doesnt find a table it will crate it for you
+// and if it already exist it will drop it to prevent duplicates when recreating
 sequelize.sync({ force: false }).then(() => {
   app.listen(PORT, () => console.log('Now listening'));
 });
