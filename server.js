@@ -8,11 +8,29 @@ const sequelize = require('./config/connection');
 // setting uo the apps template engine of choice "handlebars"
 const exphbs = require('express-handlebars');
 const hbs = exphbs.create({});
-
-
-const app = express();
+// inport for session storage and sequalizeStore
+const session = require('express-session');
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
+// variables to set up session object
+const sess = {
+  // this secret should come from the .env file
+  secret: 'Super secret secret',
+  // {} means tella our session to use cookies
+  cookie: {},
+  resave: false,
+  saveUninitialized: true,
+  store: new SequelizeStore({
+    db: sequelize
+  })
+};
 // .env lets server connect to the port that is proided by the environment insead
 const PORT = process.env.PORT || 3001;
+
+const app = express();
+
+
+// middlewear for session
+app.use(session(sess));
 
 
 app.use(express.json());

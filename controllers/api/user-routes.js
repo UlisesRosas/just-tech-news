@@ -71,11 +71,18 @@ router.post('/', (req, res) => {
     email: req.body.email,
     password: req.body.password
   })
-    .then(dbUserData => res.json(dbUserData))
-    .catch(err => {
-      console.log(err);
-      res.status(500).json(err);
-    });
+  
+    .then(dbUserData => {
+        // this call back makes sure the session is creaed before the response is sent 
+    // gives the server user info and lets it know if the user is signed in
+      req.session.save(() => {
+        req.session.user_id = dbUserData.id;
+        req.session.username = dbUserData.username;
+        req.session.loggedIn = true;
+    
+        res.json(dbUserData);
+      });
+    })
 });
 
 // PUT /api/users/1
@@ -147,9 +154,30 @@ router.post('/login', (req, res) => {
       res.status(400).json({ message: 'Incorrect password!' });
       return;
     }
+    // creates the session before sending the response
+    req.session.save(() => {
+      // declare session variables
+      req.session.user_id = dbUserData.id;
+      req.session.username = dbUserData.username;
+      req.session.loggedIn = true;
 
-    res.json({ user: dbUserData, message: 'You are now logged in!' });
+      res.json({ user: dbUserData, message: 'You are now logged in!' });
+    });
   });
+});
+
+// log out route
+router.post('/logout', (req, res) => {
+  // if logged in 
+  if (req.session.loggedIn) {
+    // then clears the session to end it and send 204 status if sussesful
+    req.session.destroy(() => {
+      res.status(204).end();
+    });
+  }
+  else {
+    res.status(404).end();
+  }
 });
 
 module.exports = router;

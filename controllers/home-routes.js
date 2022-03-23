@@ -3,6 +3,7 @@ const sequelize = require('../config/connection');
 const { Post, User, Comment } = require('../models');
 
 router.get('/', (req, res) => {
+    console.log(req.session);
     Post.findAll({
         attributes: [
             'id',
@@ -40,5 +41,17 @@ router.get('/', (req, res) => {
             res.status(500).json(err);
         });
 });
+
+// route to render login.handlebars 
+router.get('/login', (req, res) => {
+    // in this case we dont have a variable like :id so we dont need that second argument in the .render()
+    if (req.session.loggedIn) {
+        // takes us to the homepage if we the session exists
+        res.redirect('/');
+        return;
+      }
+    
+      res.render('login');
+  });
 
 module.exports = router;
